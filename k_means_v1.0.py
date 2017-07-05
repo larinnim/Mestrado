@@ -8,28 +8,6 @@ from scipy.integrate import simps
 from scipy import integrate
 from numpy import trapz
 
-conmysql = MySQLdb.connect(host='localhost',
-		user='root',
-		passwd='admin',
-		db="db_Cotidiano"
-		)
-
-curs = conmysql.cursor()
-
-curs.execute("SELECT * FROM tabela")
-#Continuar exercicio colocando dados do csv no mysql para fazer as condicionais de movimento dinamico ou estatico
-
-data_angular = curs.fetchall ()
-#print(len(data_angular))
-#print(len (dados_SVM_so_angular_resultante_dinamico.csv))
-#data_angular = list (data_angular)
-data_angular = np.array(data_angular)
-print(len(data_angular))
-
-
-#np.array(data_angular).dump(open('array.npy', 'wb'))
-#data_angular = np.load(open('array.npy', 'rb'))
-
 def estimate_coef(x, y):
     # number of observations/points
     n = np.size(x)
@@ -47,12 +25,12 @@ def estimate_coef(x, y):
  
     return(b_0, b_1)
 
-x = np.linspace(0, len(data_angular)/2, len(data_angular)/2,  endpoint=True, )
-indexes_maiorpeak = detect_peaks(data_angular, mph=None, mpd=1)
-#dados = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
-#indexes_maiorpeak = detect_peaks(dados, mph=None, mpd=1)
+data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
 
-indexes_variospeaks = find_peaks_cwt(dados, np.arange(1, 25))
+x = np.linspace(0, len(data_angular), len(data_angular),  endpoint=True, )
+indexes_maiorpeak = detect_peaks(data_angular, mph=0.04, mpd=300)
+indexes_variospeaks = find_peaks_cwt(data_angular, np.arange(1, 25))
+
 #Calcular area depois do spyke de maior intensidade
 
 dados_integral = data_angular[(indexes_maiorpeak):]
@@ -61,7 +39,7 @@ dados_integral = data_angular[(indexes_maiorpeak):]
 
 area_integral = trapz(dados_integral, dx=1)
 
-print("area_andando: ", area_integral)
+print("area_integral: ", area_integral)
 
 
 # Compute Linear Regression
@@ -70,7 +48,7 @@ x_regression = x[(indexes_maiorpeak):]
 b = estimate_coef(x_regression, dados_integral)
 
 print("Estimated coefficients Falling:\nb_0 = {}  \
-         \nb_1 = {}".format(b_caiu[0], b_caiu[1]))
+         \nb_1 = {}".format(b[0], b[1]))
 # predicted response vector
 y_pred = b[0] + b[1]*x_regression
 
