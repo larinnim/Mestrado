@@ -25,15 +25,21 @@ def estimate_coef(x, y):
  
     return(b_0, b_1)
 
-data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
+#data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
+data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
 
-x = np.linspace(0, len(data_angular), len(data_angular),  endpoint=True, )
-indexes_maiorpeak = detect_peaks(data_angular, mph=0.04, mpd=300)
-indexes_variospeaks = find_peaks_cwt(data_angular, np.arange(1, 25))
+data_new = data_angular[:50]
+print(data_new)
+x = np.linspace(0, len(data_new), len(data_new),  endpoint=True, )
+indexes_maiorpeak = detect_peaks(data_new, mph=0.04, mpd=300)
+print(indexes_maiorpeak)
+indexes_variospeaks = find_peaks_cwt(data_new, np.arange(1, 25))
+print(indexes_variospeaks)
+
 
 #Calcular area depois do spyke de maior intensidade
 
-dados_integral = data_angular[(indexes_maiorpeak):]
+dados_integral = data_new[(indexes_maiorpeak):]
 # Compute the area using the composite trapezoidal rule.
 #The argument dx=1 indicates that the spacing of the data along the x axis is 1 units.
 
@@ -41,6 +47,9 @@ area_integral = trapz(dados_integral, dx=1)
 
 print("area_integral: ", area_integral)
 
+if area_integral < 200:
+
+	print("Estatico")
 
 # Compute Linear Regression
 
