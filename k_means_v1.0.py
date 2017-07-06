@@ -29,7 +29,7 @@ def estimate_coef(x, y):
 #data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
 data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
 
-data_new = data_angular[:50]
+data_new = data_angular[:10]
 #print(data_new)
 x = np.linspace(0, len(data_new), len(data_new),  endpoint=True, )
 indexes_maiorpeak = detect_peaks(data_new, mph=0.04, mpd=300)
