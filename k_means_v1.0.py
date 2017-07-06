@@ -28,10 +28,11 @@ def estimate_coef(x, y):
 
 #data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
 data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
-data_linear = np.genfromtxt('dados.csv',delimiter=',',names=True,dtype=None)
+data_linear = pd.read_csv('dados.csv')
+#data_linear = np.genfromtxt('dados.csv',delimiter=',',names=True,dtype=None)
 
 data_new = data_angular[:10]
-#print(data_new)
+print(data_new)
 x = np.linspace(0, len(data_new), len(data_new),  endpoint=True, )
 indexes_maiorpeak = detect_peaks(data_new, mph=0.04, mpd=300)
 #print(indexes_maiorpeak)
@@ -54,7 +55,8 @@ print("area_integral: ", area_integral)
 if area_integral < 200:
 
 	data_new_linear = data_linear[:10]
-	Y = k_means_function(np.array(data_new_linear))
+	Y = k_means_function(np.array(data_new_linear)) 
+	#fazer media por linha para fazer a predicao
 	if Y == 0:
         	print('Estatico - Deitado')
 	
