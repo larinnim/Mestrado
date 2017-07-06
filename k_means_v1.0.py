@@ -28,7 +28,7 @@ def estimate_coef(x, y):
 
 #data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
 data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
-data_linear = np.genfromtxt('dados.csv')
+data_linear = np.genfromtxt('dados.csv',delimiter=',',names=True,dtype=None)
 
 data_new = data_angular[:10]
 #print(data_new)
