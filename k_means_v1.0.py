@@ -7,6 +7,7 @@ from scipy.signal import find_peaks_cwt
 from scipy.integrate import simps
 from scipy import integrate
 from numpy import trapz
+from kmeans import k_means_function
 
 def estimate_coef(x, y):
     # number of observations/points
@@ -29,17 +30,19 @@ def estimate_coef(x, y):
 data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
 
 data_new = data_angular[:50]
-print(data_new)
+#print(data_new)
 x = np.linspace(0, len(data_new), len(data_new),  endpoint=True, )
 indexes_maiorpeak = detect_peaks(data_new, mph=0.04, mpd=300)
-print(indexes_maiorpeak)
+#print(indexes_maiorpeak)
 indexes_variospeaks = find_peaks_cwt(data_new, np.arange(1, 25))
-print(indexes_variospeaks)
+#print(indexes_variospeaks)
 
 
 #Calcular area depois do spyke de maior intensidade
 
 dados_integral = data_new[(indexes_maiorpeak):]
+print(dados_integral)
+
 # Compute the area using the composite trapezoidal rule.
 #The argument dx=1 indicates that the spacing of the data along the x axis is 1 units.
 
@@ -49,42 +52,30 @@ print("area_integral: ", area_integral)
 
 if area_integral < 200:
 
-	print("Estatico")
-
+	Y = k_means_function(np.array(dados_integral))
+	if Y == 0:
+        	print('Estatico - Deitado')
+	
+	if Y == 1:
+        	print('Estatico - Sentado')
+	
+	if Y == 2:
+		print('Estatico - Em Pe')
+	#print("Estatico")
+else:
 # Compute Linear Regression
 
-x_regression = x[(indexes_maiorpeak):]
-b = estimate_coef(x_regression, dados_integral)
+	print('Dinamico')
+	x_regression = x[(indexes_maiorpeak):]
+	b = estimate_coef(x_regression, dados_integral)
 
-print("Estimated coefficients Falling:\nb_0 = {}  \
-         \nb_1 = {}".format(b[0], b[1]))
-# predicted response vector
-y_pred = b[0] + b[1]*x_regression
+	print("Estimated coefficients Falling:\nb_0 = {}  \
+        	 \nb_1 = {}".format(b[0], b[1]))
+	# predicted response vector
+	y_pred = b[0] + b[1]*x_regression
+	print("y_pred: ", y_pred)
 
-print("y_pred: ", y_pred)
-
-broken_df = pd.read_csv('dados.csv')
-mat = broken_df.as_matrix()
-
-
-kmeans = KMeans(n_clusters=4,random_state=3425).fit(mat)
-centroids = kmeans.cluster_centers_
-labels = kmeans.labels_
-print(labels)
-X=np.array([0.5632324, 0.0695801, 0.9223633])
-Y=kmeans.predict(X)
-if Y == 0:
-	print('andando')
-
-if Y == 1:
-        print('deitado')
-
-
-if Y == 2:
-        print('sentado')
-
-
-if Y == 3:
-        print('Em Pe')
+	if b[1] > 0.5:
+		print ('Dinamico-Caiu')
 
 
