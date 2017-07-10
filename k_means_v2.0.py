@@ -26,6 +26,8 @@ gz = []
 ax = []
 ay = []
 az = []
+g_resultante = []
+a_resultante = []
 
 bus = smbus.SMBus(1) # or bus = smbus.SMBus(1) for Revision 2 boards
 address = 0x68       # This is the address value read via the i2cdetect command
@@ -77,8 +79,7 @@ def estimate_coef(x, y):
  
     return(b_0, b_1)
 
-while 1:
- for i in range(0,22):
+for i in range(0,22):
         time.sleep(0.1)
         gyro_xout = read_word_2c(0x43)
         gyro_yout = read_word_2c(0x45)
@@ -93,6 +94,8 @@ while 1:
 	gy.append(gyro_yout)
 	gz.append(gyro_zout)
 	
+	g_resultante.append(math.sqrt(math.pow(gyro_xout_scaled,2)+math.pow(gyro_yout_scaled,2)+math.pow(gyro_zout_scaled,2)))
+	#print "g_resultante: ", g_resultante 
 
         #print "gyro_xout : ", (gyro_xout / 131)
         #print "gyro_yout : ", (gyro_yout / 131)
@@ -110,31 +113,43 @@ while 1:
 	ay.append(accel_yout_scaled)
         az.append(accel_zout_scaled)
 
+	a_resultante.append(math.sqrt(math.pow(accel_xout_scaled,2)+math.pow(accel_yout_scaled,2)+math.pow(accel_zout_scaled,2)))
+
         #print "accel_xout: ", accel_xout_scaled
         #print "accel_yout: ", accel_yout_scaled
         #print "accel_zout: ", accel_zout_scaled
 	time.sleep(0.5)
 
-print "Angular gx: ", gx
-print "Linear  ax: ", ax
- 
+ax_mean = np.mean(ax)
+ay_mean = np.mean(ay)
+az_mean = np.mean(az)
+
+a_resultante = [ax_mean, ay_mean, az_mean]
+print"a_resultante: ", a_resultante 
+
+conmysql = MySQLdb.connect(host= "localhost",
+                  user="root",
+                  passwd="admin",
+                  db="db_Cotidiano")
+curs = conmysql.cursor() 
+
 #data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
 #data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
-data_linear = pd.read_csv('/home/pi/dados.csv')
+#data_linear = pd.read_csv('/home/pi/dados.csv')
 #data_linear = np.genfromtxt('dados.csv',delimiter=',',names=True,dtype=None)
 
-data_new = data_angular[:10]
-print(data_new)
-x = np.linspace(0, len(data_new), len(data_new),  endpoint=True, )
-indexes_maiorpeak = detect_peaks(data_new, mph=0.04, mpd=300)
+#data_new = data_angular[:10]
+#print(data_new)
+x = np.linspace(0, len(g_resultante), len(g_resultante),  endpoint=True, )
+indexes_maiorpeak = detect_peaks(g_resultante, mph=0.04, mpd=300)
 #print(indexes_maiorpeak)
-indexes_variospeaks = find_peaks_cwt(data_new, np.arange(1, 25))
+indexes_variospeaks = find_peaks_cwt(g_resultante, np.arange(1, 25))
 #print(indexes_variospeaks)
 
 
 #Calcular area depois do spyke de maior intensidade
 
-dados_integral = data_new[(indexes_maiorpeak):]
+dados_integral = g_resultante[(indexes_maiorpeak):]
 print(dados_integral)
 
 # Compute the area using the composite trapezoidal rule.
@@ -145,23 +160,30 @@ area_integral = trapz(dados_integral, dx=1)
 print("area_integral: ", area_integral)
 
 if area_integral < 200:
-
-	data_new_linear = data_linear[:10]
-	Y = k_means_function(np.array(data_new_linear)) 
+	#Mean = np.array(a_resultante).mean
+	
+	#data_new_linear = data_linear[:10]
+	Y = k_means_function(a_resultante) 
 	#fazer media por linha para fazer a predicao
 	if Y == 0:
         	print('Estatico - Deitado')
-	
+		posicao = "Deitado"
 	if Y == 1:
         	print('Estatico - Sentado')
-	
+		posicao = "Sentado"
 	if Y == 2:
 		print('Estatico - Em Pe')
+		posicao = "Em pe"
+
+	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
+        conmysql.commit()
+        conmysql.close()
 	#print("Estatico")
 else:
 # Compute Linear Regression
 
 	print('Dinamico')
+	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
 	x_regression = x[(indexes_maiorpeak):]
 	b = estimate_coef(x_regression, dados_integral)
 
@@ -172,6 +194,10 @@ else:
 	print("y_pred: ", y_pred)
 
 	if b[1] > 0.5:
+		curs.execute('''INSERT INTO tabela_posicao VALUES (%s)''',(posicao))
+	        conmysql.commit()
+        	conmysql.close()
+
 		print ('Dinamico-Caiu')
 
 
