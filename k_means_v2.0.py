@@ -182,11 +182,14 @@ if area_integral < 200:
 else:
 # Compute Linear Regression
 
-	print('Dinamico')
+	posicao = "Andando"
 	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
+	 conmysql.commit()
+         conmysql.close()
+
 	x_regression = x[(indexes_maiorpeak):]
 	b = estimate_coef(x_regression, dados_integral)
-
+	
 	print("Estimated coefficients Falling:\nb_0 = {}  \
         	 \nb_1 = {}".format(b[0], b[1]))
 	# predicted response vector
@@ -194,6 +197,7 @@ else:
 	print("y_pred: ", y_pred)
 
 	if b[1] > 0.5:
+		posicao = "Caiu"
 		curs.execute('''INSERT INTO tabela_posicao VALUES (%s)''',(posicao))
 	        conmysql.commit()
         	conmysql.close()
