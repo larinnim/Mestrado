@@ -159,6 +159,13 @@ area_integral = trapz(dados_integral, dx=1)
 
 print("area_integral: ", area_integral)
 
+count_Deitado = 0
+count_Sentado = 0
+count_Andando = 0
+count_EmPe = 0
+count_Caiu = 0
+
+
 if area_integral < 200:
 	#Mean = np.array(a_resultante).mean
 	
@@ -168,22 +175,29 @@ if area_integral < 200:
 	if Y == 0:
         	print('Estatico - Deitado')
 		posicao = "Deitado"
+		count_Deitado += 1 
+	        curs.execute ("""INSERT INTO posicao_Deitado (Valor) VALUES (%s)""",(count_Deitado))
 	if Y == 1:
         	print('Estatico - Sentado')
 		posicao = "Sentado"
+		count_Sentado += 1
+                curs.execute ("""INSERT INTO posicao_Sentado (Valor) VALUES (%s)""",(count_Sentado))
 	if Y == 2:
 		print('Estatico - Em Pe')
 		posicao = "Em pe"
+		count_EmPe +=1 
+                curs.execute ("""INSERT INTO posicao_EmPe (Valor) VALUES (%s)""",(count_EmPe))
 
-	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
-        conmysql.commit()
+	conmysql.commit()
         conmysql.close()
 	#print("Estatico")
 else:
 # Compute Linear Regression
 
 	posicao = "Andando"
+	count_Andando += 1
 	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
+        curs.execute ("""INSERT INTO posicao_Andando (Valor) VALUES (%s)""",(count_Andando))
 	conmysql.commit()
         conmysql.close()
 
@@ -198,7 +212,9 @@ else:
 
 	if b[1] > 0.5:
 		posicao = "Caiu"
+		count_Caiu += 1
 		curs.execute('''INSERT INTO tabela_posicao VALUES (%s)''',(posicao))
+	        curs.execute ("""INSERT INTO posicao_Caiu (Valor) VALUES (%s)""",(count_Caiu))
 	        conmysql.commit()
         	conmysql.close()
 
