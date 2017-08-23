@@ -174,29 +174,30 @@ if area_integral < 200:
 	#fazer media por linha para fazer a predicao
 	if Y == 0:
         	print('Estatico - Deitado')
-		posicao = "Deitado"
+		posicao = "Lying"
 		count_Deitado += 1 
 	        curs.execute ("""INSERT INTO posicao_Deitado (Valor) VALUES (%s)""",(count_Deitado))
 	if Y == 1:
         	print('Estatico - Sentado')
-		posicao = "Sentado"
+		posicao = "Sitting"
 		count_Sentado += 1
                 curs.execute ("""INSERT INTO posicao_Sentado (Valor) VALUES (%s)""",(count_Sentado))
 	if Y == 2:
 		print('Estatico - Em Pe')
-		posicao = "Em pe"
+		posicao = "Standing"
 		count_EmPe +=1 
                 curs.execute ("""INSERT INTO posicao_EmPe (Valor) VALUES (%s)""",(count_EmPe))
 
+        curs.execute("""INSERT INTO tabela_posicao (Posicao) VALUES (%s)""",(posicao))
 	conmysql.commit()
         conmysql.close()
 	#print("Estatico")
 else:
 # Compute Linear Regression
 
-	posicao = "Andando"
+	posicao = "Walking"
 	count_Andando += 1
-	curs.execute("""INSERT INTO tabela_posicao VALUES (%s)""",(posicao))
+	curs.execute("""INSERT INTO tabela_posicao (Posicao) VALUES (%s)""",(posicao))
         curs.execute ("""INSERT INTO posicao_Andando (Valor) VALUES (%s)""",(count_Andando))
 	conmysql.commit()
         conmysql.close()
@@ -211,9 +212,9 @@ else:
 	print("y_pred: ", y_pred)
 
 	if b[1] > 0.5:
-		posicao = "Caiu"
+		posicao = "Fall"
 		count_Caiu += 1
-		curs.execute('''INSERT INTO tabela_posicao VALUES (%s)''',(posicao))
+		curs.execute('''INSERT INTO tabela_posicao (Posicao) VALUES (%s)''',(posicao))
 	        curs.execute ("""INSERT INTO posicao_Caiu (Valor) VALUES (%s)""",(count_Caiu))
 	        conmysql.commit()
         	conmysql.close()
