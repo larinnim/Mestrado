@@ -28,7 +28,7 @@ crsr_deitado.execute("SELECT * FROM tabela")
 crsr_sentado.execute("SELECT * FROM tabela")
 crsr_em_pe.execute("SELECT * FROM tabela")
 
-with open(r'/home/pi/dados.csv', 'wb') as csvfile:
+with open(r'/home/pi/host/dados.csv', 'wb') as csvfile:
     uw = UnicodeWriter(
         csvfile, delimiter=',',
         quotechar='"', quoting=csv.QUOTE_MINIMAL)
