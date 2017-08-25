@@ -76,7 +76,7 @@ while 1:
     conn, addr = s.accept()
     print 'Connect with ' + addr[0] + ':' + str(addr[1])
     
-    for i in range(0,22):
+    for i in range(0,40):
         time.sleep(0.1)
         gyro_xout = read_word_2c(0x43)
         gyro_yout = read_word_2c(0x45)
