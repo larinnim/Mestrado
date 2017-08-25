@@ -32,13 +32,14 @@ with open(r'/home/pi/host/dados.csv', 'wb') as csvfile:
     uw = UnicodeWriter(
         csvfile, delimiter=',',
         quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    for row in crsr_andando.fetchall():
+    for row in crsr_sentado.fetchall():
         uw.writerow([unicode(col) for col in row])
     for row in crsr_deitado.fetchall():
         uw.writerow([unicode(col) for col in row])
-    for row in crsr_sentado.fetchall():
-        uw.writerow([unicode(col) for col in row])
     for row in crsr_em_pe.fetchall():
         uw.writerow([unicode(col) for col in row])
+    for row in crsr_andando.fetchall():
+        uw.writerow([unicode(col) for col in row])
+
 
 	
