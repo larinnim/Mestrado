@@ -192,22 +192,21 @@ if area_integral < 200:
 	conmysql.commit()
         conmysql.close()
 	#print("Estatico")
-else:
+
 # Compute Linear Regression
+else:
+	x_regression = x[(indexes_maiorpeak):]
+	b = estimate_coef(x_regression, dados_integral)
 
-	  x_regression = x[(indexes_maiorpeak):]
-          b = estimate_coef(x_regression, dados_integral)
-
-          print("Estimated coefficients Falling:\nb_0 = {}  \
+        print("Estimated coefficients Falling:\nb_0 = {}  \
                \nb_1 = {}".format(b[0], b[1]))
               # predicted response vector
-          y_pred = b[0] + b[1]*x_regression
-          print("y_pred: ", y_pred)
+        y_pred = b[0] + b[1]*x_regression
+        print("y_pred: ", y_pred)
 
-
-        if b[1] > 0.5:
-		posicao = "Fall"
-                count_Caiu += 1
+	if b[1] > 0.5:
+  		posicao = "Fall"
+  		count_Caiu += 1
                 curs.execute("""INSERT INTO tabela_posicao (Posicao) VALUES (%s)""",(posicao))
                 curs.execute ("""INSERT INTO posicao_Caiu (Valor) VALUES (%s)""",(count_Caiu))
                 conmysql.commit()
