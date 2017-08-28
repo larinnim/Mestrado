@@ -202,10 +202,22 @@ else:
 	print("dados_integral: ", dados_integral)	
 	print("indexes_maiorpeak: ", indexes_maiorpeak)
 	print("indexes_variospeaks: ", indexes_variospeaks)
+	#scope = ((dados_integral[-1]- dados_integral[0]) / (len(g_resultante) - indexes_maiorpeak))
 
-	scope = ((g_resultante[indexes_variospeaks[-1]] - g_resultante[indexes_maiorpeak]) / ( indexes_variospeaks[-1] - indexes_maiorpeak))
-
-	if b[1] > 0.5 and scope < -2.5 :
+	#scope = ((g_resultante[indexes_variospeaks[-1]] - g_resultante[indexes_maiorpeak]) / (indexes_variospeaks[-1] - indexes_maiorpeak))
+	#print ("Scope: ", scope)
+	#print ("dados_integral[-1]:", dados_integral[-1])
+	#print ("dados_integral[0]:", dados_integral[0])
+	#print ("len(g_resultante):", len(g_resultante))
+	#print ("indexes_maiorpeak: ", indexes_maiorpeak)
+	#result_y = g_resultante[indexes_variospeaks[-1]] - g_resultante[indexes_maiorpeak] 
+	dados_integral_new = dados_integral[1:]
+	print ("dados_integral_new: ", dados_integral_new)
+	print ("max(dados_integral): ", max(dados_integral))
+        print ("max(dados_integral_new): ", max(dados_integral_new))
+	result_y = max(dados_integral)- max(dados_integral_new)
+	print ("result_y: ", result_y)
+	if b[1] > 0.5 and result_y > 70 :
   		posicao = "Fall"
   		count_Caiu += 1
                 curs.execute("""INSERT INTO tabela_posicao (Posicao) VALUES (%s)""",(posicao))
