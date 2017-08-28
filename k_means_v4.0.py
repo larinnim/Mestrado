@@ -132,25 +132,21 @@ conmysql = MySQLdb.connect(host= "localhost",
                   passwd="admin",
                   db="db_Cotidiano")
 curs = conmysql.cursor() 
+count_Deitado = 0
+count_Sentado = 0
+count_Andando = 0
+count_EmPe = 0
+count_Caiu = 0
 
-#data_angular = np.genfromtxt('dados_SVM_so_angular_resultante_dinamico.csv')
-#data_angular = np.genfromtxt('dados_SVM_so_angular.csv')
-#data_linear = pd.read_csv('/home/pi/dados.csv')
-#data_linear = np.genfromtxt('dados.csv',delimiter=',',names=True,dtype=None)
-
-#data_new = data_angular[:10]
-#print(data_new)
 x = np.linspace(0, len(g_resultante), len(g_resultante),  endpoint=True, )
+print ("g_resultante: ", g_resultante)
 indexes_maiorpeak = detect_peaks(g_resultante, mph=0.04, mpd=300)
-#print(indexes_maiorpeak)
-indexes_variospeaks = find_peaks_cwt(g_resultante, np.arange(1, 25))
+print("indexes_maiorpeak: ", indexes_maiorpeak)
+indexes_variospeaks = find_peaks_cwt(g_resultante, np.arange(1, 7))
 #print(indexes_variospeaks)
-
-
 #Calcular area depois do spyke de maior intensidade
-
 dados_integral = g_resultante[(indexes_maiorpeak):]
-print(dados_integral)
+print("dados_integra: ",dados_integral)
 
 # Compute the area using the composite trapezoidal rule.
 #The argument dx=1 indicates that the spacing of the data along the x axis is 1 units.
@@ -159,11 +155,11 @@ area_integral = trapz(dados_integral, dx=1)
 
 print("area_integral: ", area_integral)
 
-count_Deitado = 0
-count_Sentado = 0
-count_Andando = 0
-count_EmPe = 0
-count_Caiu = 0
+
+x_regression = x[(indexes_maiorpeak):]
+b = estimate_coef(x_regression, dados_integral)
+
+
 
 
 if area_integral < 200:
@@ -195,8 +191,6 @@ if area_integral < 200:
 
 # Compute Linear Regression
 else:
-	x_regression = x[(indexes_maiorpeak):]
-	b = estimate_coef(x_regression, dados_integral)
 
         print("Estimated coefficients Falling:\nb_0 = {}  \
                \nb_1 = {}".format(b[0], b[1]))
@@ -204,7 +198,14 @@ else:
         y_pred = b[0] + b[1]*x_regression
         print("y_pred: ", y_pred)
 
-	if b[1] > 0.5:
+	print("[indexes_variospeaks[-1]: ", [indexes_variospeaks[-1]])
+	print("dados_integral: ", dados_integral)	
+	print("indexes_maiorpeak: ", indexes_maiorpeak)
+	print("indexes_variospeaks: ", indexes_variospeaks)
+
+	scope = ((g_resultante[indexes_variospeaks[-1]] - g_resultante[indexes_maiorpeak]) / ( indexes_variospeaks[-1] - indexes_maiorpeak))
+
+	if b[1] > 0.5 and scope < -2.5 :
   		posicao = "Fall"
   		count_Caiu += 1
                 curs.execute("""INSERT INTO tabela_posicao (Posicao) VALUES (%s)""",(posicao))
