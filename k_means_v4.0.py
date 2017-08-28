@@ -162,7 +162,7 @@ b = estimate_coef(x_regression, dados_integral)
 
 
 
-if area_integral < 200:
+if area_integral < 150:
 	#Mean = np.array(a_resultante).mean
 	
 	#data_new_linear = data_linear[:10]
