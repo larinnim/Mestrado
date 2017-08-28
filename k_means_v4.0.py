@@ -168,17 +168,17 @@ if area_integral < 200:
 	#data_new_linear = data_linear[:10]
 	Y = k_means_function(a_resultante) 
 	#fazer media por linha para fazer a predicao
-	if Y == 0:
+	if Y == 1:
         	print('Estatico - Deitado')
 		posicao = "Lying"
 		count_Deitado += 1 
 	        curs.execute ("""INSERT INTO posicao_Deitado (Valor) VALUES (%s)""",(count_Deitado))
-	if Y == 2:
+	if Y == 0:
         	print('Estatico - Sentado')
 		posicao = "Sitting"
 		count_Sentado += 1
                 curs.execute ("""INSERT INTO posicao_Sentado (Valor) VALUES (%s)""",(count_Sentado))
-	if Y == 1:
+	if Y == 3:
 		print('Estatico - Em Pe')
 		posicao = "Standing"
 		count_EmPe +=1 

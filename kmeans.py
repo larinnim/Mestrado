@@ -14,5 +14,6 @@ def k_means_function(x):
 	#Mean = x.mean(axis=0)
 	#print(Mean)
 	Y = kmeans.predict(x)
+	print('Y: ', Y)
 
 	return Y
