@@ -32,7 +32,12 @@ k_means_v4.0.py:
 		Não: realiza regressão linear e identifica os valores dos coeficientes
 			Condicional se é queda: o coeficiente angular > 0.5 e diferença entre o os dois maiores peaks > 70
 
-	
+Algoritmos para apresentar:
+
+K_Means_4cluster_linear_teste_1.py: Apresenta o algoritmo com clusterização de todas as posições inclusive cair
+K_Means_4cluster_linear_teste.py: Apresenta o algoritmo com clusterização de todas as posições exceto cair
+k_Means.py: A curva entre Andando e Caiu
+
 
 	
 
